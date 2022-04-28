@@ -46,7 +46,10 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests().antMatchers(HttpMethod.GET, "/topicos").permitAll()
 				.antMatchers(HttpMethod.GET, "/topicos/*").permitAll().antMatchers(HttpMethod.GET, "/usuario/*")
-				.permitAll().antMatchers(HttpMethod.POST, "/auth").permitAll().anyRequest().authenticated().and().csrf()
+				.permitAll()
+				.antMatchers(HttpMethod.GET, "/actuator/**").permitAll()
+				.antMatchers(HttpMethod.POST, "/auth").permitAll()
+				.anyRequest().authenticated().and().csrf()
 				.disable() // tipo de ataque -> desabilita pois vou utilizar web token
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.addFilterBefore(new AutenticacaoTokenFilter(tokenService, usuarioRepository), UsernamePasswordAuthenticationFilter.class);
@@ -55,5 +58,7 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 	// Configuração de recursos estáticos, imagens, css, js ....
 	@Override
 	public void configure(WebSecurity web) throws Exception {
+		//web.ignoring().antMatchers("/**.html", "/v2/api-docs", "/webjars/**", "/configuration/**", "/swagger-resources/**");
+		web.ignoring().antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/webjars/swagger-ui/**");
 	}
 }
